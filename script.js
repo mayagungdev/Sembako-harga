@@ -1,5 +1,5 @@
 // 🔁 GANTI URL INI dengan URL CSV dari Google Sheets Anda
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/ID_ANDA/export?format=csv&gid=0"; 
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3B_3bz96kPXSafKlnY70baWV9cNjGDlR3Se7FgW_P8Hm_XKdsddjsWNx_WCDqYAmUf4gcAnMpPRhz/pub?gid=0&single=true&output=csv"; 
 
 let barangData = [];       // menyimpan array {nama, kategori, harga}
 let chartInstance = null;
