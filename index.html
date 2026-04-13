@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Daftar Harga Sembako</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Harga Sembako & Rokok</h1>
+
+        <!-- Filter & Search -->
+        <div class="filters">
+            <input type="text" id="search" placeholder="🔍 Cari barang...">
+            <div class="price-range">
+                <label>💰 Harga: </label>
+                <input type="number" id="minPrice" placeholder="Min" step="500">
+                <span>-</span>
+                <input type="number" id="maxPrice" placeholder="Max" step="500">
+            </div>
+            <select id="categoryFilter">
+                <option value="all">Semua Kategori</option>
+            </select>
+        </div>
+
+        <!-- Statistik Ringkas -->
+        <div class="stats" id="stats">
+            <div>📊 Menghitung...</div>
+        </div>
+
+        <!-- Grafik -->
+        <div class="chart-container">
+            <canvas id="priceChart"></canvas>
+        </div>
+
+        <!-- Tabel Data -->
+        <div class="table-container">
+            <table id="priceTable">
+                <thead>
+                    <tr><th>Barang</th><th>Kategori</th><th>Harga (Rp)</th></tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="3">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="footer">Data diupdate dari Google Sheets | Perubahan harga otomatis tampil</div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
