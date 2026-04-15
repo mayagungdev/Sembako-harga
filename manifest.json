@@ -3,8 +3,8 @@
   "short_name": "Warung",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#2c3e2f",
-  "background_color": "#f9f7f2",
+  "theme_color": "#1e40af",
+  "background_color": "#f0f4f8",
   "icons": [
     {
       "src": "assets/icons/icon-192.png",
