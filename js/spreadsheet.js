@@ -3,32 +3,45 @@ async function fetchSpreadsheetData(csvUrl) {
         const response = await fetch(csvUrl);
         if (!response.ok) throw new Error("Gagal fetch CSV");
         const csvText = await response.text();
-        const rows = csvText.trim().split(/\r?\n/);
-        if (rows.length < 2) throw new Error("CSV kosong");
-        
-        const headers = rows[0].split(",").map(h => h.trim().toLowerCase());
-        let namaIndex = headers.findIndex(h => h.includes("nama") || h.includes("barang"));
-        let kategoriIndex = headers.findIndex(h => h.includes("kategori"));
-        let hargaIndex = headers.findIndex(h => h.includes("harga"));
-        let eceranIndex = headers.findIndex(h => h.includes("ecer") || h === "jenis");
-        
-        if (namaIndex === -1) namaIndex = 0;
-        if (hargaIndex === -1) hargaIndex = 2;
+        const data = parseCSV(csvText);
         
         const produkList = [];
-        for (let i = 1; i < rows.length; i++) {
-            const cols = rows[i].split(",");
-            if (cols.length <= Math.max(namaIndex, hargaIndex)) continue;
-            let nama = cols[namaIndex]?.trim();
-            let kategori = kategoriIndex !== -1 ? cols[kategoriIndex]?.trim() : "Umum";
-            let harga = parseInt(cols[hargaIndex]?.trim());
-            let isEceran = false;
-            if (eceranIndex !== -1) {
-                let val = cols[eceranIndex]?.trim().toLowerCase();
-                isEceran = (val === "ecer" || val === "ya" || val === "true");
+        for (let row of data) {
+            const nama = row.nama_barang || row.nama;
+            const kategori = row.kategori || "Umum";
+            const hargaDasar = parseInt(row.harga_satuan_dasar || row.harga);
+            const satuanDasar = row.satuan_dasar || "pcs";
+            const isEceran = (row.ecer || "").toLowerCase() === "ya";
+            let daftarSatuan = [];
+            
+            if (isEceran && row.daftar_satuan) {
+                // format "6 batang:11000;12 batang:20000"
+                const parts = row.daftar_satuan.split(";");
+                for (let part of parts) {
+                    const [namaSatuan, hargaStr] = part.split(":");
+                    if (namaSatuan && hargaStr) {
+                        daftarSatuan.push({
+                            nama: namaSatuan.trim(),
+                            harga: parseInt(hargaStr)
+                        });
+                    }
+                }
             }
-            if (nama && !isNaN(harga)) {
-                produkList.push({ nama, kategori, harga, isEceran });
+            // selalu tambahkan satuan dasar
+            daftarSatuan.unshift({
+                nama: satuanDasar,
+                harga: hargaDasar
+            });
+            
+            if (nama && !isNaN(hargaDasar)) {
+                produkList.push({
+                    nama,
+                    kategori,
+                    satuanDasar,
+                    isEceran,
+                    daftarSatuan, // array {nama, harga}
+                    lastUpdate: new Date().toISOString()
+                });
             }
         }
         return produkList;
@@ -38,7 +51,6 @@ async function fetchSpreadsheetData(csvUrl) {
     }
 }
 
-// Simpan data produk ke IndexedDB berdasarkan usahaId
 async function importProdukFromSheet(usahaId, csvUrl) {
     const produkBaru = await fetchSpreadsheetData(csvUrl);
     // Hapus produk lama untuk usaha ini
